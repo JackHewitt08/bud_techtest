@@ -17,7 +17,6 @@ export const formatDate = (isoFormattedString: string): string => {
   if (!isoFormattedString) return "";
 
   const constructedDate = new Date(isoFormattedString);
-  console.log(constructedDate, isoFormattedString);
   const date = Number.isNaN(constructedDate.getTime())
     ? new Date(`${isoFormattedString}T00:00:00Z`)
     : constructedDate;

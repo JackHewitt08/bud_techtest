@@ -1,11 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse, delay } from "msw";
 import { server } from "../../../vitest-setup";
 import { transactions } from "../../api/data/transactions";
 import { TransactionHistory } from ".";
 
 describe("transaction history", () => {
-  test("the expenses tab should be shown by default", () => {
+  test("the expenses tab should be shown by default", async () => {
     render(<TransactionHistory />);
 
     expect(screen.getByText("Transaction History")).toBeInTheDocument();
@@ -16,40 +16,31 @@ describe("transaction history", () => {
 
     expect(expensesTabTrigger).toHaveAttribute("data-state", "active");
 
-    const expensesTable = screen.getByRole("table", {
+    // This needs to be findByRole due to the async nature of the test https://testing-library.com/docs/dom-testing-library/api-async
+    const expensesTable = await screen.findByRole("table", {
       name: "Expenses",
     });
 
     expect(expensesTable).toBeInTheDocument();
     expect(screen.getByText("-€20.25")).toBeInTheDocument();
   });
-
-  test.skip("changing between the expenses and income tabs should show different transactions", () => {
+  
+  test("changing between the expenses and income tabs should show different transactions", async () => {
     render(<TransactionHistory />);
 
-    const expensesTabTrigger = screen.getByRole("tab", {
-      name: "Expenses",
-    });
-    const incomeTabTrigger = screen.getByRole("tab", {
-      name: "Income",
-    });
-    const expensesTable = screen.getByRole("table", {
-      name: "Expenses",
-    });
-    const incomeTable = screen.queryByRole("table", {
-      name: "Income",
-    });
+    const expensesTabTrigger = screen.getByRole("tab", { name: "Expenses" });
+    const incomeTabTrigger = screen.getByRole("tab", { name: "Income" });
 
+    const expensesTable = await screen.findByRole("table", { name: "Expenses" });
     expect(expensesTable).toBeInTheDocument();
-    expect(incomeTable).not.toBeInTheDocument();
 
-    expect(screen.getByText("-€20.25")).toBeInTheDocument();
-
-    incomeTabTrigger.click();
-
-    expect(incomeTabTrigger).toHaveAttribute("data-state", "active");
+    // Radix expects pointer events, not element clicks to trigger activations https://github.com/radix-ui/primitives/issues/2362
+    fireEvent.mouseDown(incomeTabTrigger);
+    
+    await waitFor(() => expect(incomeTabTrigger).toHaveAttribute("data-state", "active"));
     expect(expensesTabTrigger).toHaveAttribute("data-state", "inactive");
-    expect(screen.queryByText("-20.25")).not.toBeInTheDocument();
+  
+    expect(screen.queryByText("-€20.25")).not.toBeInTheDocument();
   });
 
   test("displays a loading state while transactions are fetching", async () => {
