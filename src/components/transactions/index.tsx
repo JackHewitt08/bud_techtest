@@ -1,13 +1,16 @@
+import { useTransactions } from "../../api/hooks";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Transaction as TransactionType } from "../../../types";
-import { transactions } from "../../api/data/transactions";
 import "./index.css";
 import { Transaction } from "./item";
 
 const isExpense = (transaction: TransactionType) => transaction.amount.value < 0;
 const isIncome = (transaction: TransactionType) => transaction.amount.value > 0;
+interface TableProps {
+  transactions: Array<TransactionType>;
+}
 
-const Expenses = () => {
+const Expenses = ({ transactions }: TableProps) => {
   return (
     <table aria-label="Expenses">
       <thead>
@@ -26,7 +29,7 @@ const Expenses = () => {
   );
 };
 
-const Income = () => {
+const Income = ({transactions}: TableProps) => {
   return (
     <table aria-label="Income">
       <thead>
@@ -46,6 +49,8 @@ const Income = () => {
 };
 
 export const TransactionHistory = () => {
+  const { transactions } = useTransactions();
+
   return (
     <>
       <h1 className="align-left">Transaction History</h1>
@@ -56,10 +61,10 @@ export const TransactionHistory = () => {
         </Tabs.List>
 
         <Tabs.Content className="TabsContent" value="expenses">
-          <Expenses />
+          <Expenses transactions={transactions} />
         </Tabs.Content>
         <Tabs.Content className="TabsContent" value="income">
-          <Income />
+          <Income transactions={transactions} />
         </Tabs.Content>
       </Tabs.Root>
     </>

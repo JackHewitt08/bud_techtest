@@ -1,8 +1,10 @@
+import { useAccounts } from "../../api/hooks";
 import { AccountItem } from "./item";
 import "./index.css";
-import { accounts } from "../../api/data/accounts";
 
 export const Accounts = () => {
+  const { accounts } = useAccounts();
+
   return (
     <>
       <h1 className="align-left">Your accounts</h1>
