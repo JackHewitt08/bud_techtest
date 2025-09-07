@@ -21,7 +21,7 @@ describe("transaction history", () => {
     });
 
     expect(expensesTable).toBeInTheDocument();
-    expect(screen.getByText("-20.25")).toBeInTheDocument();
+    expect(screen.getByText("-€20.25")).toBeInTheDocument();
   });
 
   test.skip("changing between the expenses and income tabs should show different transactions", () => {
@@ -43,7 +43,7 @@ describe("transaction history", () => {
     expect(expensesTable).toBeInTheDocument();
     expect(incomeTable).not.toBeInTheDocument();
 
-    expect(screen.getByText("-20.25")).toBeInTheDocument();
+    expect(screen.getByText("-€20.25")).toBeInTheDocument();
 
     incomeTabTrigger.click();
 
