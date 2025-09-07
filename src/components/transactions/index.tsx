@@ -5,6 +5,7 @@ import { Transaction as TransactionType } from "../../../types";
 import "./index.css";
 import { Transaction } from "./item";
 import React from "react";
+import { ErrorState } from "../error";
 
 const isExpense = (transaction: TransactionType) => transaction.amount.value < 0;
 const isIncome = (transaction: TransactionType) => transaction.amount.value > 0;
@@ -51,7 +52,7 @@ const Income = ({transactions}: TableProps) => {
 };
 
 export const TransactionHistory = () => {
-  const { transactions, loading } = useTransactions();
+  const { transactions, loading, error } = useTransactions();
 
   return (
     <>
@@ -62,9 +63,11 @@ export const TransactionHistory = () => {
           <Tabs.Trigger value="expenses">Expenses</Tabs.Trigger>
           <Tabs.Trigger value="income">Income</Tabs.Trigger>
         </Tabs.List>
-        {loading ? (
-        <Loading />
-      ) : (
+        {error ? (
+          <ErrorState />
+        ) : loading ? (
+          <Loading />
+        ) : (
         <React.Fragment> 
           <Tabs.Content className="TabsContent" value="expenses">
             <Expenses transactions={transactions} />

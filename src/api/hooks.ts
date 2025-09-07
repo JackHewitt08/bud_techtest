@@ -4,7 +4,7 @@ import type { Account, Transaction } from "../../types";
 export const useAccounts = () => {
   const [accounts, setAccounts] = useState<Array<Account>>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<unknown>(null);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     let isMounted = true;
@@ -34,7 +34,7 @@ export const useAccounts = () => {
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Array<Transaction>>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<unknown>(null);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     let isMounted = true;

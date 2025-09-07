@@ -69,4 +69,15 @@ describe("transaction history", () => {
     expect(expensesTable).toBeInTheDocument();
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
   });
+
+  test("renders an error message when transactions API fails", async () => {
+    server.use(
+      http.get("/api/transactions", () => new HttpResponse(null, { status: 500 }))
+    );
+
+    render(<TransactionHistory />);
+
+    const errorEl = await screen.findByText("Something went wrong. Please try again.");
+    expect(errorEl).toBeInTheDocument();
+  });
 });
