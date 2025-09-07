@@ -1,4 +1,7 @@
 import { render, screen } from "@testing-library/react";
+import { http, HttpResponse, delay } from "msw";
+import { server } from "../../../vitest-setup";
+import { transactions } from "../../api/data/transactions";
 import { TransactionHistory } from ".";
 
 describe("transaction history", () => {
@@ -47,5 +50,23 @@ describe("transaction history", () => {
     expect(incomeTabTrigger).toHaveAttribute("data-state", "active");
     expect(expensesTabTrigger).toHaveAttribute("data-state", "inactive");
     expect(screen.queryByText("-20.25")).not.toBeInTheDocument();
+  });
+
+  test("displays a loading state while transactions are fetching", async () => {
+    server.use(
+      http.get("/api/transactions", async () => {
+        await delay(100);
+        return HttpResponse.json(transactions);
+      }),
+    );
+
+    render(<TransactionHistory />);
+
+    expect(screen.getByText("Transaction History")).toBeInTheDocument();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+
+    const expensesTable = await screen.findByRole("table", { name: "Expenses" });
+    expect(expensesTable).toBeInTheDocument();
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
   });
 });
